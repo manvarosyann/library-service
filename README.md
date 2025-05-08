@@ -46,3 +46,26 @@ This project uses **Maven Wrapper** and can be built and run via:
 
 ```bash
 ./mvnw clean compile exec:java
+```
+------
+
+## Local Database Setup with Docker Compose
+
+To simplify local development and testing, the project includes a Docker Compose manifest that sets up a PostgreSQL database container. Follow the steps below to get your local database running.
+
+### Prerequisites
+1. Docker Desktop installed and running on your system
+2. DBeaver client
+
+At the root of your project, create a `.env` file containing the following configuration variables:
+
+```env
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=secret123
+POSTGRES_DB=library_db
+POSTGRES_PORT=5432
+```
+
+## Notes
+1. `.env` is **not committed** and is listed in `.gitignore` for security.
+2. Docker volume ensures data persistence across restarts.
