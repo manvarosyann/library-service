@@ -34,3 +34,6 @@ Thumbs.db
 # Coverage reports
 jacoco.exec
 coverage-reports/
+
+# Environment variables file (security-sensitive)
+.env
