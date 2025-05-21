@@ -37,3 +37,23 @@ coverage-reports/
 
 # Environment variables file (security-sensitive)
 .env
+
+# Docker-related files
+**/docker-entrypoint-initdb.d/
+**/postgres-data/
+*.pid
+
+# PostgreSQL volume data (if you store it locally)
+pgdata/
+db-data/
+*.sql~
+
+# Docker Compose override files
+docker-compose.override.yml
+
+# DBeaver / pgAdmin workspace config
+.dbeaver/
+.pgadmin/
+
+# Mac temporary files near volumes
+db/.DS_Store
