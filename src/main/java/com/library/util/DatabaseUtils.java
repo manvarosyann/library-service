@@ -1,5 +1,8 @@
 package com.library.util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +10,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DatabaseUtils {
-    private static final String URL = "jdbc:postgresql://localhost:5432/librarydb";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "postgres";
+    private static final HikariDataSource dataSource;
+
+    static {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/librarydb");
+        config.setUsername("postgres");
+        config.setPassword("postgres");
+        config.setMaximumPoolSize(10);
+        config.setIdleTimeout(30000);
+        config.setMaxLifetime(600000);
+        dataSource = new HikariDataSource(config);
+    }
 
     private static String testURL = null;
     private static String testUser = null;
@@ -25,7 +37,11 @@ public class DatabaseUtils {
         if (testURL != null) {
             return DriverManager.getConnection(testURL, testUser, testPassword);
         }
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return dataSource.getConnection();
+    }
+
+    public static void shutdownPool() {
+        dataSource.close();
     }
 
     // Method a
