@@ -1,3 +1,5 @@
+package dbtests;
+
 import java.sql.*;
 
 public class SQLInjectionTest {

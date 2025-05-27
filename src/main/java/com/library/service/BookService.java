@@ -3,6 +3,7 @@ package com.library.service;
 import com.library.model.Book;
 import com.library.repository.BookRepository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class BookService {
@@ -12,15 +13,15 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public void createBook(Book book) {
+    public void createBook(Book book) throws SQLException {
         bookRepository.save(book);
     }
 
-    public void updateBook(Book book) {
+    public void updateBook(Book book) throws SQLException {
         bookRepository.update(book);
     }
 
-    public void deleteBook(String bookId) {
+    public void deleteBook(String bookId) throws SQLException {
         bookRepository.delete(bookId);
     }
 

@@ -1,3 +1,5 @@
+package dbtests;
+
 import com.library.util.DatabaseUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
