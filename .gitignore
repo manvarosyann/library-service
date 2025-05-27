@@ -3,6 +3,7 @@
 
 # IntelliJ IDEA project files
 .idea/
+.idea/runConfigurations/
 *.iml
 *.iws
 out/
@@ -25,6 +26,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.swp
+*.trace
+*.stacktrace
 
 # Eclipse project files (just in case)
 .classpath
@@ -41,34 +44,29 @@ coverage-reports/
 # Docker-related files
 **/docker-entrypoint-initdb.d/
 **/postgres-data/
+docker-compose.override.yml
 *.pid
 
 # PostgreSQL volume data (if you store it locally)
 pgdata/
 db-data/
 *.sql~
-
-# Docker Compose override files
-docker-compose.override.yml
+*.sql
+*.backup
 
 # DBeaver / pgAdmin workspace config
 .dbeaver/
 .pgadmin/
 
-# Mac temporary files near volumes
-db/.DS_Store
-
-# SQL Injection test logs or compiled files
-SQLInjectionTest.class
-SQLInjectionTest.log
-
 # JDBC drivers
 lib/postgresql-*.jar
 
-# IntelliJ run configs
-.idea/runConfigurations/
+# H2 / SQLite embedded test DBs
+*.mv.db
+*.h2.db
 
-# Output from pg_dump or SQL backups
-*.backup
-*.sql
+# JVM crash logs
+hs_err_pid*.log
 
+# H2 init script for testing (if machine-specific)
+src/test/resources/db/init-h2.sql
