@@ -33,7 +33,7 @@ public class DatabaseUtils {
         testPassword = password;
     }
 
-    private static Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
         if (testURL != null) {
             return DriverManager.getConnection(testURL, testUser, testPassword);
         }
@@ -106,6 +106,27 @@ public class DatabaseUtils {
             return results;
         } catch (SQLException e) {
             throw new RuntimeException("Execution failed: " + query, e);
+        }
+    }
+
+    public static void executeWithConnection(Connection connection, String query, Object... args) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int i = 0; i < args.length; i++) {
+                preparedStatement.setObject(i + 1, args[i]);
+            }
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public static <T> T findOneWithConnection(Connection connection, String query, Function<ResultSet, T> mapper, Object... args) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int i = 0; i < args.length; i++) {
+                preparedStatement.setObject(i + 1, args[i]);
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (!resultSet.next()) return null;
+                return mapper.apply(resultSet);
+            }
         }
     }
 }

@@ -2,7 +2,6 @@ package com.library.app;
 
 import com.library.model.Book;
 import com.library.repository.BookRepository;
-import com.library.repository.InMemoryBookRepository;
 import com.library.repository.JdbcBookRepository;
 import com.library.service.BookService;
 
