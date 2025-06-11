@@ -10,6 +10,8 @@ out/
 
 # Logs
 *.log
+logs/
+log/
 
 # OS files
 .DS_Store
@@ -37,9 +39,11 @@ Thumbs.db
 # Coverage reports
 jacoco.exec
 coverage-reports/
+target/site/jacoco/
 
 # Environment variables file (security-sensitive)
 .env
+.env.*
 
 # Docker-related files
 **/docker-entrypoint-initdb.d/
@@ -70,3 +74,18 @@ hs_err_pid*.log
 
 # H2 init script for testing (if machine-specific)
 src/test/resources/db/init-h2.sql
+
+# Spring Boot devtools
+.spring-boot-devtools.properties
+
+# Mac Quick Look cache files
+.AppleDouble
+
+# Windows thumbnail cache files
+ehthumbs.db
+
+# Node/npm if using frontend assets
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
