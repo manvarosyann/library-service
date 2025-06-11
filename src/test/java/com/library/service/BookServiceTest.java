@@ -5,6 +5,7 @@ import com.library.repository.InMemoryBookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testCreateAndFindBookById() {
+    void testCreateAndFindBookById() throws SQLException {
         Book book = new Book("1", "Clean Code", "Robert Martin", "Programming");
         bookService.createBook(book);
 
@@ -28,7 +29,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testUpdateBook() {
+    void testUpdateBook() throws SQLException {
         Book book = new Book("1", "Clean Code", "Robert Martin", "Programming");
         bookService.createBook(book);
 
@@ -42,7 +43,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testDeleteBook() {
+    void testDeleteBook() throws SQLException {
         Book book = new Book("3", "1984", "George Orwell", "Dystopia");
         bookService.createBook(book);
         bookService.deleteBook("3");
@@ -51,7 +52,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testFindAllBooks() {
+    void testFindAllBooks() throws SQLException {
         bookService.createBook(new Book("1", "Clean Code", "Robert Martin", "Programming"));
         bookService.createBook(new Book("2", "1984", "George Orwell", "Dystopia"));
 
@@ -60,7 +61,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testFindBookByTitle() {
+    void testFindBookByTitle() throws SQLException {
         Book book = new Book("1", "Clean Code", "Robert Martin", "Programming");
         bookService.createBook(book);
 
@@ -70,7 +71,7 @@ public class BookServiceTest {
     }
 
     @Test
-    void testFindBookByGenre() {
+    void testFindBookByGenre() throws SQLException {
         bookService.createBook(new Book("1", "Book X", "Author X", "Horror"));
         bookService.createBook(new Book("2", "Book Y", "Author Y", "Horror"));
         bookService.createBook(new Book("3", "Book Z", "Author Z", "Fantasy"));

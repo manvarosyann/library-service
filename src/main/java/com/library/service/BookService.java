@@ -2,14 +2,17 @@ package com.library.service;
 
 import com.library.model.Book;
 import com.library.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public class BookService {
     private final BookRepository bookRepository;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(@Qualifier("jdbcBookRepository") BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 

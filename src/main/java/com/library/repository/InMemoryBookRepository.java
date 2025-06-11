@@ -1,12 +1,14 @@
 package com.library.repository;
 
 import com.library.model.Book;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository("inMemoryBookRepository")
 public class InMemoryBookRepository implements BookRepository {
     private final Map<String, Book> booksByID = new HashMap<>();
     private final Map<String, Book> booksByTitle = new HashMap<>();

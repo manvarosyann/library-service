@@ -2,11 +2,13 @@ package com.library.repository;
 
 import com.library.model.Book;
 import com.library.util.DatabaseUtils;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository("jdbcBookRepository")
 public class JdbcBookRepository implements BookRepository {
     private Book map(ResultSet resultSet) {
         try {
