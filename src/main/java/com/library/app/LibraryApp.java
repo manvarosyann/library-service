@@ -8,8 +8,8 @@ import com.library.service.BookService;
 import java.sql.SQLException;
 import java.util.List;
 
-public class LibraryApp {
-    public static void main(String[] args) throws SQLException {
+//public class LibraryApp {
+//    public static void main(String[] args) throws SQLException {
         // Using InMemoryBookRepository
 //        BookService bookService = new BookService(new InMemoryBookRepository());
 //
@@ -68,30 +68,30 @@ public class LibraryApp {
 //        bookService.getAllBooks().forEach(System.out::println);
 
 
-        // Using JdbcBookRepository
-        BookRepository repository = new JdbcBookRepository();
-        BookService bookService = new BookService(repository);
-
-        try {
-            // Create a book
-            Book book = new Book("1", "Digital Fortress", "Dan Brown", "Thriller");
-            bookService.createBook(book);
-            System.out.println("Book created");
-
-            // Fetch by title
-            Book found = bookService.getBookByTitle("Digital Fortress");
-            if (found != null) {
-                System.out.println("Book found" + found);
-            } else {
-                System.out.println("Book not found");
-            }
-
-            // List all books
-            List<Book> allBooks = bookService.getAllBooks();
-            System.out.println("All books found: ");
-            allBooks.forEach(System.out::println);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+//        // Using JdbcBookRepository
+//        BookRepository repository = new JdbcBookRepository();
+//        BookService bookService = new BookService(repository);
+//
+//        try {
+//            // Create a book
+//            Book book = new Book("1", "Digital Fortress", "Dan Brown", "Thriller");
+//            bookService.createBook(book);
+//            System.out.println("Book created");
+//
+//            // Fetch by title
+//            Book found = bookService.getBookByTitle("Digital Fortress");
+//            if (found != null) {
+//                System.out.println("Book found" + found);
+//            } else {
+//                System.out.println("Book not found");
+//            }
+//
+//            // List all books
+//            List<Book> allBooks = bookService.getAllBooks();
+//            System.out.println("All books found: ");
+//            allBooks.forEach(System.out::println);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}

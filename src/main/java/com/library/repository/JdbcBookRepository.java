@@ -4,12 +4,21 @@ import com.library.model.Book;
 import com.library.util.DatabaseUtils;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Repository("jdbcBookRepository")
+@Repository
 public class JdbcBookRepository implements BookRepository {
+    private final DataSource dataSource;
+
+    public JdbcBookRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     private Book map(ResultSet resultSet) {
         try {
             return new Book(
@@ -25,13 +34,20 @@ public class JdbcBookRepository implements BookRepository {
 
     @Override
     public void save(Book book) throws SQLException {
-        DatabaseUtils.execute("insert into book (title, section_id) values (?, ?)",
-                book.getTitle(), 1
-        );
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("insert into book (title, section_id) values (?, ?)")) {
+            preparedStatement.setString(1, book.getTitle());
+            preparedStatement.setInt(2, 1);
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override
     public void update(Book book) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("update book set title = ? where book_id = ?")) {
+
+        }
         DatabaseUtils.execute("update book set title = ? where book_id = ?",
                 book.getTitle(), Integer.parseInt(book.getBookID())
         );

@@ -22,6 +22,7 @@ public class HikariPoolTestApp {
         CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 
         long startTime = System.currentTimeMillis();
+
         for (int i = 0; i < threadCount; i++) {
             Thread thread = new Thread(() -> {
                 try (Connection connection = dataSource.getConnection();
