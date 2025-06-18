@@ -4,13 +4,15 @@ import com.library.service.BookService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-@SpringBootApplication
+// Try and find a way to disable the auto configuration based on the conditions.
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class LibraryApplication {
     public static void main(String[] args) {
         SpringApplication.run(LibraryApplication.class, args);
