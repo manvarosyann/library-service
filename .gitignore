@@ -3,10 +3,12 @@
 
 # IntelliJ IDEA project files
 .idea/
-.idea/runConfigurations/
 *.iml
 *.iws
 out/
+
+# VS Code project files
+.vscode/
 
 # Logs
 *.log
@@ -16,6 +18,8 @@ log/
 # OS files
 .DS_Store
 Thumbs.db
+.AppleDouble
+ehthumbs.db
 
 # Compiled class files
 *.class
@@ -51,12 +55,11 @@ target/site/jacoco/
 docker-compose.override.yml
 *.pid
 
-# PostgreSQL volume data (if you store it locally)
+# PostgreSQL & DB data (ignore only local/generated data, keep versioned migration scripts)
 pgdata/
 db-data/
-*.sql~
-*.sql
 *.backup
+*.sql~
 
 # DBeaver / pgAdmin workspace config
 .dbeaver/
@@ -69,23 +72,17 @@ lib/postgresql-*.jar
 *.mv.db
 *.h2.db
 
-# JVM crash logs
-hs_err_pid*.log
-
 # H2 init script for testing (if machine-specific)
 src/test/resources/db/init-h2.sql
 
 # Spring Boot devtools
 .spring-boot-devtools.properties
 
-# Mac Quick Look cache files
-.AppleDouble
-
-# Windows thumbnail cache files
-ehthumbs.db
-
 # Node/npm if using frontend assets
 node_modules/
 npm-debug.log
 yarn-debug.log
 yarn-error.log
+
+# JVM crash logs
+hs_err_pid*.log

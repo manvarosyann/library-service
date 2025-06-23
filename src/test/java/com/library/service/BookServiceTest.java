@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.config.DateTimeFormatProperties;
 import com.library.model.Book;
 import com.library.repository.InMemoryBookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,10 @@ public class BookServiceTest {
 
     @BeforeEach
     void setUp() {
-        bookService = new BookService(new InMemoryBookRepository());
+        DateTimeFormatProperties props = new DateTimeFormatProperties();
+        props.setDateFormats(List.of("yyyy-MM-dd"));
+        props.setTimeFormats(List.of("HH:mm:ss"));
+        bookService = new BookService(new InMemoryBookRepository(), props);
     }
 
     @Test

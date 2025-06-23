@@ -53,6 +53,7 @@ public class JdbcBookRepository implements BookRepository {
         );
     }
 
+
     @Override
     public void delete(String bookID) throws SQLException {
         DatabaseUtils.execute("delete from book where book_id = ?",
