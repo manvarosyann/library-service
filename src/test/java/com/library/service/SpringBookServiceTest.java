@@ -29,12 +29,15 @@ public class SpringBookServiceTest {
     private DataSource dataSource;
 
     @BeforeEach
-    void clearDatabase() throws Exception {
+    void clearDatabaseAndInsertSection() throws Exception {
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute("truncate table  book restart identity cascade");
+            stmt.execute("truncate table book restart identity cascade");
+            stmt.execute("truncate table section restart identity cascade");
+            stmt.execute("insert into section (section_id, name) values (1, 'Default Section')");
         }
     }
+
 
     @Test
     void testCreateAndFindBookById() throws SQLException {
@@ -73,5 +76,4 @@ public class SpringBookServiceTest {
         assertNotNull(found);
         assertEquals("Clean Code", found.getTitle());
     }
-
 }

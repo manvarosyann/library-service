@@ -22,11 +22,11 @@ public class IsolationLevelDemo {
             connectionA.setAutoCommit(false);
 
             System.out.println();
-            System.out.println(STR."Running with isolation level \{getIsolationName(isolationLevel)}");
+            System.out.println("Running with isolation level" + getIsolationName(isolationLevel));
 
             // First read
             int countBefore = getAvailableBookCount(connectionA);
-            System.out.println(STR."User A (before borrow): available books = \{countBefore}");
+            System.out.println("User A (before borrow): available books" + countBefore);
 
             // Trigger B
             Thread threadB = new Thread(IsolationLevelDemo::runTransactionB);
@@ -35,8 +35,8 @@ public class IsolationLevelDemo {
 
             // Second read (within the same transaction)
             int countAfter = getAvailableBookCount(connectionA);
-            System.out.println(STR."User A (after borrow): available books = \{countAfter}");
-            System.out.println(STR."Availability changed in same transaction? \{countBefore != countAfter}");
+            System.out.println("User A (after borrow): available books" + countAfter);
+            System.out.println("Availability changed in same transaction?" + (countBefore != countAfter));
 
             connectionA.commit();
         }

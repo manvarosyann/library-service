@@ -15,7 +15,7 @@ public class BookEntity {
 
     private String title;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "section_id")
     private SectionEntity sectionId;
 
@@ -25,6 +25,17 @@ public class BookEntity {
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<AuthorEntity> authors = new HashSet<>();
+
+    public BookEntity(Long bookId, String title, SectionEntity sectionId, Set<AuthorEntity> authors) {
+        this.bookId = bookId;
+        this.title = title;
+        this.sectionId = sectionId;
+        this.authors = authors;
+    }
+
+    public BookEntity() {
+
+    }
 
     public Long getBookId() {
         return bookId;

@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Repository
+@Repository("jdbcBookRepository")
 public class JdbcBookRepository implements BookRepository {
     private final DataSource dataSource;
 
