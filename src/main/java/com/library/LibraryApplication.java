@@ -38,8 +38,8 @@ public class LibraryApplication {
 //            // Using @ConfigurationProperties try and read different date and time formats
 //            bookService.printDateFormats();
 //
-////             Using the CommandLineRunner print out all the properties that are in the Environment,
-////             and print out all names of beans present in the application context
+//             Using the CommandLineRunner print out all the properties that are in the Environment,
+//             and print out all names of beans present in the application context
 //            System.out.println("------ All Properties in Environment ------");
 //            for (var propertySource : ((org.springframework.core.env.AbstractEnvironment) environment).getPropertySources()) {
 //                if (propertySource instanceof org.springframework.core.env.EnumerablePropertySource<?>) {

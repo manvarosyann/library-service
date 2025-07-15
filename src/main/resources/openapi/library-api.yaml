@@ -1,0 +1,378 @@
+openapi: 3.0.3
+info:
+  title: Library Management System API
+  description: RESTful API for managing users, books, rentals, and admin operations
+  version: 1.0.0
+
+servers:
+  - url: https://api.library-system.com/v1
+
+paths:
+  # As a user, I want to register and log in, so that I can access my personal library account.
+  /users/register:
+    post:
+      tags: [Users]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid input
+
+  /users/login:
+    post:
+      tags: [Users]
+      summary: Log in as user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+        '401':
+          description: Invalid credentials
+
+  # As a user, I want to browse and search books by title, author, or genre, so that I can find books that interest me.
+  # As a librarian, I want to add new books, so that users can have more options to choose from.
+  /books:
+    get:
+      tags: [Books]
+      summary: List books with pagination, filtering and sorting
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+        - in: query
+          name: author
+          schema:
+            type: string
+        - in: query
+          name: genre
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: sort
+          schema:
+            type: string
+            example: title,asc
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+    post:
+      tags: [Books]
+      summary: Add a new book to the library
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBook'
+      responses:
+        '201':
+          description: Book added successfully
+        '400':
+          description: Invalid input
+
+  # As a user, I want to view detailed information about a book, so that I can decide whether to rent it.
+  /books/{id}:
+    get:
+      tags: [Books]
+      summary: Get a book by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Book found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+
+  # As a user, I want to rent a book if it is available, so that I can read it digitally for a limited time.
+  /rentals:
+    post:
+      tags: [Rentals]
+      summary: Rent a book if available
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RentalRequest'
+      responses:
+        '201':
+          description: Book rented successfully
+        '400':
+          description: Book is not available or invalid input
+  
+  # As a user, I want to view my current rented books, so that I can track what I'm reading.
+  /rentals/user/{userId}:
+    get:
+      tags: [Rentals]
+      summary: Get current rentals of a user
+      parameters: 
+        - name: userId
+          in: path
+          required: true
+          schema: 
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: rentedAt,asc
+      responses:
+        '200':
+           description: List of currently rented books
+           content: 
+             application/json:
+               schema: 
+                 type: array
+                 items:  
+                   $ref: '#/components/schemas/RentedBook'
+        '404':
+           description: User or rental data not found
+           
+    # As a user, I want to return a rented book, so that I can make it available for others.
+  /rentals/return:
+    patch: 
+      tags: [Rentals]
+      summary: Return a rented book
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/ReturnRequest'
+      responses:
+        '200': 
+          description: Book returned successfully
+        '400':
+          description: Invalid input ot book already returned
+        '404':
+          description: Rental not found
+          
+    #  As a user, I want to see my rental history, so that I can keep track of what I’ve read.
+  /rentals/user/{userId}history:
+    get: 
+      tags: [Rentals]
+      summary: Get rental history of a user
+      parameters: 
+       - name: userId
+         in: path
+         required: true
+         schema: 
+           type: integer
+      responses: 
+        '200': 
+           description:  List of past rentals
+           content: 
+             application/json:
+               schema:
+                 type: array
+                 items: 
+                    $ref: '#/components/schemas/RentalHistoryItem'
+        '404':
+           description: User not found or no rental history
+  
+  # As a librarian, I want to log in with privileged access, so that I can manage the book inventory.
+  /librarian/login:
+    post:
+      tags: [Librarians]
+      summary: Log in as librarian
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibrarianRegistration'
+      responses:
+        '200':
+          description: Successful login
+        '401':
+          description: Invalid credentials
+ 
+    # As an admin, I want to manage librarian accounts, so that I can assign and update staff roles.
+  /admin/librarians/{librarianId}:
+    put:
+      tags: [Admin]
+      summary: Update librarian account and role
+      parameters:
+        - name: librarianId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LibrarianUpdateRequest'
+      responses:
+        '200':
+          description: Librarian updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Librarian not found
+  
+components:
+  schemas:
+    LibrarianRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [username, email, password]
+
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [username, email, password]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        available:
+          type: boolean
+
+    RentalRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+        bookId:
+          type: integer
+          required: [userId, bookId]
+          
+    RentedBook:
+      type: object
+      properties:
+        rentalId:
+          type: integer
+        book:
+          $ref: '#/components/schemas/Book'
+        rentedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+          
+    ReturnRequest:
+      type: object
+      properties:
+        rentalId:
+          type: integer
+      required: [rentalId]
+      
+    RentalHistoryItem:
+      type: object
+      properties:
+        rentalId:
+          type: integer
+        book:
+          $ref: '#/components/schemas/Book'
+        rentedAt:
+          type: string
+          format: date-time
+        returnedAt:
+          type: string
+          format: date-time 
+          
+    NewBook:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        available:
+          type: boolean
+      required: [title, author, genre, available]
+      
+      
+    LibrarianUpdateRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [Staff, SeniorStaff, Manager, Administrator]
+      required: [username, email, role]
+    
