@@ -86,3 +86,37 @@ yarn-error.log
 
 # JVM crash logs
 hs_err_pid*.log
+
+# IntelliJ test result folders
+.idea/**/shelf/
+
+# JUnit / test reports
+test-output/
+surefire-reports/
+failsafe-reports/
+target/surefire-reports/
+target/failsafe-reports/
+
+# Temporary H2/Postgres data created during test runs
+*.trace.db
+*.log.db
+
+# IDE auto-generated test configs
+*.test.js
+*.test.ts
+*.test.json
+
+# Spring Boot test-specific application files
+application-test.yml
+application-test.properties
+
+# JetBrains cache & index files
+.idea/.idea_modules/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/.name
+.idea/.cache
+.idea/.gradle
+
+# Mac-specific `.DS_Store` in subfolders
+**/.DS_Store
