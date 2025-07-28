@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -130,6 +131,8 @@ public class SectionEntityManagerTest {
 
         SectionEntity result = sectionRepository.save(anotherEntityWithSameId);
 
+        sectionRepository.findAll().forEach(System.out::println);
+
         assertEquals(id, result.getSectionId());
         assertEquals("Another Section With Same ID", result.getName());
     }
@@ -142,6 +145,7 @@ public class SectionEntityManagerTest {
         testEntityManager.persistAndFlush(sectionEntity);
 
         Long id = sectionEntity.getSectionId();
+
         SectionEntity anotherEntityWithSameId = new SectionEntity();
         anotherEntityWithSameId.setSectionId(id);
         anotherEntityWithSameId.setName("Another Section With Same ID");

@@ -68,4 +68,14 @@ public class SectionEntity {
     public void setBooks(Set<BookEntity> books) {
         this.books = books;
     }
+
+    @Override
+    public String toString() {
+        return "SectionEntity{" +
+                "sectionId=" + sectionId +
+                ", name='" + name + '\'' +
+                ", managedBy=" + managedBy +
+                ", books=" + books +
+                '}';
+    }
 }

@@ -2,9 +2,7 @@ package com.library.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "author")
@@ -28,7 +26,7 @@ public class AuthorEntity {
     private String biography;
 
     @ManyToMany(mappedBy = "authors")
-    private Set<BookEntity> books = new HashSet<>();
+    private List<BookEntity> books = new ArrayList<>();
 
     public Long getAuthorId() {
         return authorId;
@@ -78,11 +76,11 @@ public class AuthorEntity {
         this.biography = biography;
     }
 
-    public Set<BookEntity> getBooks() {
+    public List<BookEntity> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<BookEntity> books) {
+    public void setBooks(List<BookEntity> books) {
         this.books = books;
     }
 }

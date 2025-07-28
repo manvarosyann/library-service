@@ -1,4 +1,131 @@
 package com.library.service;
 
+import com.library.model.AuthorEntity;
+import com.library.model.BookEntity;
+import com.library.model.SectionEntity;
+import com.library.repository.JpaAuthorsRepository;
+import com.library.repository.JpaBookRepository;
+import com.library.repository.JpaSectionRepository;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
+import org.springframework.http.MediaType;
+
+import java.util.Arrays;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Transactional
 public class BookControllerIT {
+    private Long existingBookId;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private JpaBookRepository bookRepository;
+
+    @Autowired
+    private JpaSectionRepository sectionRepository;
+
+    @Autowired
+    private JpaAuthorsRepository authorRepository;
+
+    private SectionEntity savedSection;
+    private AuthorEntity savedAuthor;
+
+    @BeforeEach
+    void setUp() {
+        bookRepository.deleteAll();
+        authorRepository.deleteAll();
+        sectionRepository.deleteAll();
+
+        SectionEntity section = new SectionEntity();
+        section.setName("Fiction");
+        section.setManagedBy(null);
+        savedSection = sectionRepository.save(section);
+
+        AuthorEntity author = new AuthorEntity();
+        author.setFirstName("George");
+        author.setLastName("Orwell");
+        author.setNationality("British");
+        savedAuthor = authorRepository.save(author);
+
+        BookEntity book = new BookEntity();
+        book.setTitle("1984");
+        book.setSection(savedSection);
+        book.setAuthors(new java.util.ArrayList<>(Arrays.asList(savedAuthor)));
+
+        BookEntity savedBook = bookRepository.save(book);
+        this.existingBookId = savedBook.getBookId();
+    }
+
+    @Test
+    void testGetAllBooks() throws Exception {
+        mockMvc.perform(get("/books"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void testCreateBook() throws Exception {
+        String newBookJson = String.format("""
+            {
+              "title": "Book Title",
+              "sectionId": %d,
+              "authorIds": [%d]
+            }
+            """, savedSection.getSectionId(), savedAuthor.getAuthorId());
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newBookJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title").value("Book Title"));
+    }
+
+    @Test
+    void testUpdateBook() throws Exception {
+        String updatedBookJson = String.format("""
+            {
+              "title": "Animal Farm",
+              "sectionId": %d,
+              "authorIds": [%d]
+            }
+            """, savedSection.getSectionId(), savedAuthor.getAuthorId());
+
+        mockMvc.perform(put("/books/" + existingBookId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedBookJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Animal Farm"));
+    }
+
+    @Test
+    void testDeleteBook() throws Exception {
+        Long bookIdToDelete = 2L;
+
+        mockMvc.perform(delete("/books/" + bookIdToDelete))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void testGetBookById() throws Exception {
+        mockMvc.perform(get("/books/" + existingBookId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookId").value(existingBookId));
+    }
+
 }

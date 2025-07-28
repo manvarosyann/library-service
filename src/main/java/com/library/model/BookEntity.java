@@ -2,8 +2,8 @@ package com.library.model;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "book")
@@ -24,9 +24,9 @@ public class BookEntity {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id")
     )
-    private Set<AuthorEntity> authors = new HashSet<>();
+    private List<AuthorEntity> authors = new ArrayList<>();
 
-    public BookEntity(Long bookId, String title, SectionEntity sectionId, Set<AuthorEntity> authors) {
+    public BookEntity(Long bookId, String title, SectionEntity sectionId, List<AuthorEntity> authors) {
         this.bookId = bookId;
         this.title = title;
         this.sectionId = sectionId;
@@ -61,11 +61,11 @@ public class BookEntity {
         this.sectionId = sectionId;
     }
 
-    public Set<AuthorEntity> getAuthors() {
+    public List<AuthorEntity> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<AuthorEntity> authors) {
+    public void setAuthors(List<AuthorEntity> authors) {
         this.authors = authors;
     }
 }
