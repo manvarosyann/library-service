@@ -82,12 +82,12 @@ public class BookControllerIT {
     @Test
     void testCreateBook() throws Exception {
         String newBookJson = String.format("""
-            {
-              "title": "Book Title",
-              "sectionId": %d,
-              "authorIds": [%d]
-            }
-            """, savedSection.getSectionId(), savedAuthor.getAuthorId());
+                {
+                  "title": "Book Title",
+                  "sectionId": %d,
+                  "authorIds": [%d]
+                }
+                """, savedSection.getSectionId(), savedAuthor.getAuthorId());
 
         mockMvc.perform(post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,12 +99,12 @@ public class BookControllerIT {
     @Test
     void testUpdateBook() throws Exception {
         String updatedBookJson = String.format("""
-            {
-              "title": "Animal Farm",
-              "sectionId": %d,
-              "authorIds": [%d]
-            }
-            """, savedSection.getSectionId(), savedAuthor.getAuthorId());
+                {
+                  "title": "Animal Farm",
+                  "sectionId": %d,
+                  "authorIds": [%d]
+                }
+                """, savedSection.getSectionId(), savedAuthor.getAuthorId());
 
         mockMvc.perform(put("/books/" + existingBookId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,4 +128,41 @@ public class BookControllerIT {
                 .andExpect(jsonPath("$.bookId").value(existingBookId));
     }
 
+    @Test
+    void testCreateBook_InvalidTitle_ShouldReturnValidationError() throws Exception {
+        String invalidJson = String.format("""
+                {
+                  "title": "badword",
+                  "sectionId": %d,
+                  "authorIds": [%d]
+                }
+                """, savedSection.getSectionId(), savedAuthor.getAuthorId());
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.title").value("Title contains inappropriate language"));
+    }
+
+    @Test
+    void testCreateBook_MissingFields_ShouldReturnMultipleValidationErrors() throws Exception {
+        String invalidJson = """
+                {
+                  "title": "",
+                  "sectionId": null,
+                  "authorIds": []
+                }
+                """;
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Validation failed"))
+                .andExpect(jsonPath("$.errors.title").value("Title must be at least 2 characters"))
+                .andExpect(jsonPath("$.errors.sectionId").value("Section ID is required"))
+                .andExpect(jsonPath("$.errors.authorIds").value("At least one author is required"));
+    }
 }

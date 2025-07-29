@@ -2,6 +2,7 @@ package com.library.controller;
 
 import com.library.model.BookDto;
 import com.library.service.JpaBookServiceDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,12 +31,12 @@ public class BookControllerDto {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody @Valid BookDto bookDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(bookServiceDto.createBook(bookDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id, @RequestBody @Valid BookDto bookDto) {
         return ResponseEntity.ok(bookServiceDto.updateBook(id, bookDto));
     }
 

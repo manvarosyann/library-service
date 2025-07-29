@@ -1,12 +1,23 @@
 package com.library.model;
 
+import com.library.validation.NoForbiddenWord;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
-import java.util.Set;
 
 public class BookDto {
     private Long bookId;
+
+    @Size(min = 2, message = "Title must be at least 2 characters")
+    @NoForbiddenWord(message = "Title contains inappropriate language")
     private String title;
+
+    @NotNull(message = "Section ID is required")
     private Long sectionId;
+
+    @NotEmpty(message = "At least one author is required")
     private List<Long> authorIds;
 
     public BookDto() {
