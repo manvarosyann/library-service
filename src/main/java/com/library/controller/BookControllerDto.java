@@ -20,8 +20,18 @@ public class BookControllerDto {
     }
 
     @GetMapping
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        return ResponseEntity.ok(bookServiceDto.getAllBooks());
+    public ResponseEntity<List<BookDto>> getAllBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long sectionId,
+            @RequestParam(required = false) List<Long> authorIds,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @RequestParam(required = false) Integer minPages,
+            @RequestParam(required = false) Integer maxPages
+    ) {
+        List<BookDto> books = bookServiceDto.getFilteredBooks(title, sectionId,
+                authorIds, sortBy, direction, minPages, maxPages);
+        return ResponseEntity.ok(books);
     }
 
     @GetMapping("/{id}")

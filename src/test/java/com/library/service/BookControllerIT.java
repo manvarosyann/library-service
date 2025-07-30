@@ -165,4 +165,20 @@ public class BookControllerIT {
                 .andExpect(jsonPath("$.errors.sectionId").value("Section ID is required"))
                 .andExpect(jsonPath("$.errors.authorIds").value("At least one author is required"));
     }
+
+    @Test
+    void testGetBooksFilteredByExactTitle() throws Exception {
+        mockMvc.perform(get("/books")
+                        .param("title", "1984"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("1984"));
+    }
+
+    @Test
+    void testSortByTitleAndDescending() throws Exception {
+        mockMvc.perform(get("/books")
+                        .param("sortBy", "title")
+                        .param("direction", "desc"))
+                .andExpect(status().isOk());
+    }
 }

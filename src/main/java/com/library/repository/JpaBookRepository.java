@@ -2,11 +2,12 @@ package com.library.repository;
 
 import com.library.model.BookEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface JpaBookRepository extends JpaRepository<BookEntity, Long> {
+public interface JpaBookRepository extends JpaRepository<BookEntity, Long>, JpaSpecificationExecutor<BookEntity> {
     Optional<BookEntity> findByTitle(String title);
 }

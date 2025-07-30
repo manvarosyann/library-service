@@ -26,11 +26,15 @@ public class BookEntity {
     )
     private List<AuthorEntity> authors = new ArrayList<>();
 
-    public BookEntity(Long bookId, String title, SectionEntity sectionId, List<AuthorEntity> authors) {
+    @Column(name = "pages")
+    private Integer pages;
+
+    public BookEntity(Long bookId, String title, SectionEntity sectionId, List<AuthorEntity> authors, Integer pages) {
         this.bookId = bookId;
         this.title = title;
         this.sectionId = sectionId;
         this.authors = authors;
+        this.pages = pages;
     }
 
     public BookEntity() {
@@ -67,5 +71,21 @@ public class BookEntity {
 
     public void setAuthors(List<AuthorEntity> authors) {
         this.authors = authors;
+    }
+
+    public SectionEntity getSectionId() {
+        return sectionId;
+    }
+
+    public void setSectionId(SectionEntity sectionId) {
+        this.sectionId = sectionId;
+    }
+
+    public Integer getPages() {
+        return pages;
+    }
+
+    public void setPages(Integer pages) {
+        this.pages = pages;
     }
 }
