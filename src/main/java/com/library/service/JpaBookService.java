@@ -1,5 +1,6 @@
 package com.library.service;
 
+import com.library.dto.BookFilterRequest;
 import com.library.model.*;
 import com.library.repository.JpaAuthorsRepository;
 import com.library.repository.JpaBookRepository;
@@ -70,27 +71,26 @@ public class JpaBookService {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public Page<BookResponseDto> getFilteredBooks(String title, Long sectionId, List<Long> authorIds,
-                                                  String sortBy, String direction, Pageable pageable) {
+    public Page<BookResponseDto> getFilteredBooks(BookFilterRequest filter, Pageable pageable) {
         Set<String> allowedSortFields = Set.of("title", "bookId");
 
-        if (sortBy != null && allowedSortFields.contains(sortBy)) {
-            throw new IllegalStateException("Invalid sort field: " + sortBy);
+        if (filter.getSortBy() != null && !allowedSortFields.contains(filter.getSortBy())) {
+            throw new IllegalStateException("Invalid sort field: " + filter.getSortBy());
         }
 
         Page<BookEntity> page = bookRepository.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (title != null) {
-                predicates.add(cb.equal(root.get("title"), title));
+            if (filter.getTitle() != null) {
+                predicates.add(cb.equal(root.get("title"), filter.getTitle()));
             }
 
-            if (sectionId != null) {
-                predicates.add(cb.equal(root.get("section").get("sectionId"), sectionId));
+            if (filter.getSectionId() != null) {
+                predicates.add(cb.equal(root.get("section").get("sectionId"), filter.getSectionId()));
             }
 
-            if (authorIds != null && !authorIds.isEmpty()) {
-                predicates.add(root.join("authors").get("authorId").in(authorIds));
+            if (filter.getAuthorIds() != null && !filter.getAuthorIds().isEmpty()) {
+                predicates.add(root.join("authors").get("authorId").in(filter.getAuthorIds()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

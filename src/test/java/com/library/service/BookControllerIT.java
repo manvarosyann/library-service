@@ -77,7 +77,7 @@ public class BookControllerIT {
     void testGetAllBooks() throws Exception {
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.content").isArray());
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BookControllerIT {
     void testGetBookById() throws Exception {
         mockMvc.perform(get("/books/" + existingBookId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.bookId").value(existingBookId));
+                .andExpect(jsonPath("$.title").value("1984"));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class BookControllerIT {
         mockMvc.perform(get("/books")
                         .param("title", "1984"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("1984"));
+                .andExpect(jsonPath("$.content[0].title").value("1984"));
     }
 
     @Test

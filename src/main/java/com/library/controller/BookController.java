@@ -1,5 +1,6 @@
 package com.library.controller;
 
+import com.library.dto.BookFilterRequest;
 import com.library.model.BookCreateDto;
 import com.library.model.BookResponseDto;
 import com.library.service.JpaBookService;
@@ -24,16 +25,10 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<Page<BookResponseDto>> getAllBooks(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) Long sectionId,
-            @RequestParam(required = false) List<Long> authorIds,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String direction,
+            @ModelAttribute BookFilterRequest filter,
             Pageable pageable
     ) {
-        Page<BookResponseDto> books = bookService.getFilteredBooks(
-                title, sectionId, authorIds, sortBy, direction, pageable
-        );
+        Page<BookResponseDto> books = bookService.getFilteredBooks(filter, pageable);
         return ResponseEntity.ok(books);
     }
 
