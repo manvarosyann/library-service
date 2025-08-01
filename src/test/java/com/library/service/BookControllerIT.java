@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -65,7 +66,7 @@ public class BookControllerIT {
 
         BookEntity book = new BookEntity();
         book.setTitle("1984");
-        book.setSection(savedSection);
+        book.setSectionId(savedSection);
         book.setAuthors(new java.util.ArrayList<>(Arrays.asList(savedAuthor)));
 
         BookEntity savedBook = bookRepository.save(book);
@@ -180,5 +181,47 @@ public class BookControllerIT {
                         .param("sortBy", "title")
                         .param("direction", "desc"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetBooksPaginated() throws Exception {
+        for (int i = 0; i < 8; i++) {
+            BookEntity book = new BookEntity();
+            book.setTitle("Book " + i);
+            book.setSectionId(savedSection);
+            book.setAuthors(new java.util.ArrayList<>(Arrays.asList(savedAuthor)));
+            bookRepository.save(book);
+        }
+
+        mockMvc.perform(get("/books")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("sort", "title,asc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.totalElements").value(9))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.number").value(0));
+    }
+
+    @Test
+    void testGetBooksSecondPage() throws Exception {
+        for (int i = 0; i < 8; i++) {
+            BookEntity book = new BookEntity();
+            book.setTitle("Book " + i);
+            book.setSectionId(savedSection);
+            book.setAuthors(new ArrayList<>(Arrays.asList(savedAuthor)));
+            bookRepository.save(book);
+        }
+
+        mockMvc.perform(get("/books")
+                        .param("page", "1")
+                        .param("size", "5")
+                        .param("sort", "title,desc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(4))
+                .andExpect(jsonPath("$.totalElements").value(9))
+                .andExpect(jsonPath("$.totalPages").value(2))
+                .andExpect(jsonPath("$.number").value(1));
     }
 }

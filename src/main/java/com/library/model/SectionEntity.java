@@ -1,10 +1,12 @@
 package com.library.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "section")
 public class SectionEntity {
@@ -35,47 +37,5 @@ public class SectionEntity {
         this.name = name;
         this.managedBy = managedBy;
         this.books = books;
-    }
-
-    public Long getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public PersonEntity getManagedBy() {
-        return managedBy;
-    }
-
-    public void setManagedBy(PersonEntity managedBy) {
-        this.managedBy = managedBy;
-    }
-
-    public Set<BookEntity> getBooks() {
-        return books;
-    }
-
-    public void setBooks(Set<BookEntity> books) {
-        this.books = books;
-    }
-
-    @Override
-    public String toString() {
-        return "SectionEntity{" +
-                "sectionId=" + sectionId +
-                ", name='" + name + '\'' +
-                ", managedBy=" + managedBy +
-                ", books=" + books +
-                '}';
     }
 }

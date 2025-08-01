@@ -5,21 +5,46 @@ import java.util.stream.Collectors;
 
 public class BookMapper {
 
-    public static BookDto toDto(BookEntity bookEntity) {
-        BookDto dto = new BookDto();
+    public static BookCreateDto toDto(BookEntity bookEntity) {
+        BookCreateDto dto = new BookCreateDto();
         dto.setBookId(bookEntity.getBookId());
         dto.setTitle(bookEntity.getTitle());
-        dto.setSectionId(bookEntity.getSection().getSectionId());
-        dto.setAuthorIds(bookEntity.getAuthors().stream().map(AuthorEntity::getAuthorId).collect(Collectors.toList()));
+        dto.setSectionId(bookEntity.getSectionId().getSectionId());
+        dto.setAuthorIds(
+                bookEntity.getAuthors()
+                        .stream()
+                        .map(AuthorEntity::getAuthorId).collect(Collectors.toList()));
         return dto;
     }
 
-    public static BookEntity toEntity(BookDto dto, SectionEntity section, List<AuthorEntity> authors) {
+    public static BookEntity toEntity(BookCreateDto dto, SectionEntity section, List<AuthorEntity> authors) {
         BookEntity entity = new BookEntity();
-        entity.setBookId(dto.getBookId());
         entity.setTitle(dto.getTitle());
-        entity.setSection(section);
+        entity.setSectionId(section);
         entity.setAuthors(authors);
         return entity;
+    }
+
+    public static void updateEntity(BookEntity bookEntity, BookUpdateDto dto, SectionEntity section, List<AuthorEntity> authors) {
+        if (dto.getTitle() != null) {
+            bookEntity.setTitle(dto.getTitle());
+        }
+        if (section != null) {
+            bookEntity.setSectionId(section);
+        }
+        if (authors != null && !authors.isEmpty()) {
+            bookEntity.setAuthors(authors);
+        }
+    }
+
+    public static BookResponseDto toResponseDto(BookEntity bookEntity) {
+        BookResponseDto dto = new BookResponseDto();
+        dto.setTitle(bookEntity.getTitle());
+        dto.setSectionName(bookEntity.getSectionId().getName());
+        dto.setAuthorNames(bookEntity.getAuthors()
+                .stream()
+                .map(AuthorEntity::getFullName)
+                .collect(Collectors.toList()));
+        return dto;
     }
 }

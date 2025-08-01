@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -254,8 +253,8 @@ public class SectionEntityManagerTest {
         section.getBooks().add(savedBook1);
         section.getBooks().add(savedBook2);
 
-        savedBook1.setSection(section);
-        savedBook2.setSection(section);
+        savedBook1.setSectionId(section);
+        savedBook2.setSectionId(section);
 
         SectionEntity savedSection = sectionRepository.save(section);
 
@@ -279,8 +278,8 @@ public class SectionEntityManagerTest {
         section.getBooks().add(persistedBook1);
         section.getBooks().add(persistedBook2);
 
-        persistedBook1.setSection(section);
-        persistedBook2.setSection(section);
+        persistedBook1.setSectionId(section);
+        persistedBook2.setSectionId(section);
 
         testEntityManager.persist(section);
         testEntityManager.flush();
@@ -305,8 +304,8 @@ public class SectionEntityManagerTest {
         section.getBooks().add(persistedBook1);
         section.getBooks().add(persistedBook2);
 
-        persistedBook1.setSection(section);
-        persistedBook2.setSection(section);
+        persistedBook1.setSectionId(section);
+        persistedBook2.setSectionId(section);
 
         SectionEntity mergedSection = testEntityManager.merge(section);
         testEntityManager.flush();
@@ -321,36 +320,36 @@ public class SectionEntityManagerTest {
     void testSaveChildUsingRepositorySaveWithoutParent() {
         BookEntity book = new BookEntity();
         book.setTitle("Book Without Section");
-        book.setSection(null);
+        book.setSectionId(null);
 
         BookEntity savedBook = bookRepository.save(book);
         assertNotNull(savedBook.getBookId());
-        assertNull(savedBook.getSection());
+        assertNull(savedBook.getSectionId());
     }
 
     @Test
     void testSaveChildUsingEntityManagerPersistWithoutParent() {
         BookEntity book = new BookEntity();
         book.setTitle("Book Without Section");
-        book.setSection(null);
+        book.setSectionId(null);
 
         testEntityManager.persistAndFlush(book);
 
         assertNotNull(book.getBookId());
-        assertNull(book.getSection());
+        assertNull(book.getSectionId());
     }
 
     @Test
     void testSaveChildUsingEntityManagerMergeWithoutParent() {
         BookEntity book = new BookEntity();
         book.setTitle("Book Without Section");
-        book.setSection(null);
+        book.setSectionId(null);
 
         BookEntity merged = testEntityManager.merge(book);
         testEntityManager.flush();
 
         assertNotNull(merged.getBookId());
-        assertNull(merged.getSection());
+        assertNull(merged.getSectionId());
         assertNotSame(book, merged);
     }
 
@@ -362,13 +361,13 @@ public class SectionEntityManagerTest {
 
         BookEntity book = new BookEntity();
         book.setTitle("Book With New Section");
-        book.setSection(newSection);
+        book.setSectionId(newSection);
 
         BookEntity savedBook = bookRepository.save(book);
 
         assertNotNull(savedBook.getBookId());
-        assertNotNull(savedBook.getSection());
-        assertNotNull(savedBook.getSection().getSectionId());
+        assertNotNull(savedBook.getSectionId());
+        assertNotNull(savedBook.getSectionId().getSectionId());
     }
 
     @Test
@@ -378,14 +377,14 @@ public class SectionEntityManagerTest {
 
         BookEntity book = new BookEntity();
         book.setTitle("Book With New Section");
-        book.setSection(newSection);
+        book.setSectionId(newSection);
 
         testEntityManager.persist(book);
         testEntityManager.flush();
 
         assertNotNull(book.getBookId());
-        assertNotNull(book.getSection());
-        assertNotNull(book.getSection().getSectionId());
+        assertNotNull(book.getSectionId());
+        assertNotNull(book.getSectionId().getSectionId());
     }
 
     @Test
@@ -395,14 +394,14 @@ public class SectionEntityManagerTest {
 
         BookEntity book = new BookEntity();
         book.setTitle("Book With New Section");
-        book.setSection(newSection);
+        book.setSectionId(newSection);
 
         BookEntity merged = testEntityManager.merge(book);
         testEntityManager.flush();
 
         assertNotNull(merged.getBookId());
-        assertNotNull(merged.getSection());
-        assertNotNull(merged.getSection().getSectionId());
+        assertNotNull(merged.getSectionId());
+        assertNotNull(merged.getSectionId().getSectionId());
         assertNotSame(book, merged);
     }
 
@@ -416,7 +415,7 @@ public class SectionEntityManagerTest {
 
         BookEntity child = new BookEntity();
         child.setTitle("New Book");
-        child.setSection(detachedParent);
+        child.setSectionId(detachedParent);
 
         BookEntity savedChild = bookRepository.save(child);
         assertNotNull(savedChild.getBookId());
@@ -432,7 +431,7 @@ public class SectionEntityManagerTest {
 
         BookEntity child = new BookEntity();
         child.setTitle("Book With Detached Parent");
-        child.setSection(detachedParent);
+        child.setSectionId(detachedParent);
 
         // This will fail if parent is detached (persist expects new/transient entity)
         assertThrows(PersistenceException.class, () -> {
@@ -451,7 +450,7 @@ public class SectionEntityManagerTest {
 
         BookEntity child = new BookEntity();
         child.setTitle("Book With Detached Parent");
-        child.setSection(detachedParent);
+        child.setSectionId(detachedParent);
 
         BookEntity mergedChild = testEntityManager.merge(child);
         testEntityManager.flush();

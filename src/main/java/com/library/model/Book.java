@@ -1,5 +1,9 @@
 package com.library.model;
 
+
+import lombok.Data;
+
+@Data
 public class Book {
     private final String bookID;
     private String title;
@@ -13,52 +17,5 @@ public class Book {
         this.author = author;
         this.genre = genre;
         this.isAvailable = true;
-    }
-
-    public String getBookID() {
-        return bookID;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public void setGenre(String genre) {
-        this.genre = genre;
-    }
-
-    public void setAvailable(boolean available) {
-        isAvailable = available;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "bookID='" + bookID + '\'' +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", genre='" + genre + '\'' +
-                ", isAvailable=" + isAvailable +
-                '}';
     }
 }
