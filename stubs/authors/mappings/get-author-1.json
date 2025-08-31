@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/authors/1"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "authorId": 1,
+      "fullName": "Robert C. Martin"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

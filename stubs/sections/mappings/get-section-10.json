@@ -1,0 +1,8 @@
+{
+  "request": { "method": "GET", "url": "/sections/10" },
+  "response": {
+    "status": 200,
+    "jsonBody": { "sectionId": 10, "name": "Software Engineering" },
+    "headers": { "Content-Type": "application/json" }
+  }
+}

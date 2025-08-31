@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/authors/2"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "authorId": 2,
+      "fullName": "Martin Fowler"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

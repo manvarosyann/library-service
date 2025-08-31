@@ -31,6 +31,6 @@ public class AuthorEntity {
     private List<BookEntity> books = new ArrayList<>();
 
     public String getFullName() {
-        return STR."\{firstName} \{lastName}";
+        return firstName + " " + lastName;
     }
 }

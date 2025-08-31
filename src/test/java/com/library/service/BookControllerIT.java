@@ -1,5 +1,9 @@
 package com.library.service;
 
+import com.library.client.AuthorClient;
+import com.library.client.AuthorDto;
+import com.library.client.SectionClient;
+import com.library.client.SectionDto;
 import com.library.model.AuthorEntity;
 import com.library.model.BookEntity;
 import com.library.model.SectionEntity;
@@ -12,9 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import org.springframework.http.MediaType;
@@ -47,6 +56,13 @@ public class BookControllerIT {
     private SectionEntity savedSection;
     private AuthorEntity savedAuthor;
 
+    @MockBean
+    private RemoteValidationService remoteValidationService;
+    @MockBean
+    private SectionClient sectionsClient;
+    @MockBean
+    private AuthorClient authorsClient;
+
     @BeforeEach
     void setUp() {
         bookRepository.deleteAll();
@@ -66,8 +82,17 @@ public class BookControllerIT {
 
         BookEntity book = new BookEntity();
         book.setTitle("1984");
-        book.setSectionId(savedSection);
+        book.setSection(savedSection);
         book.setAuthors(new java.util.ArrayList<>(Arrays.asList(savedAuthor)));
+        existingBookId = bookRepository.save(book).getBookId();
+
+        doNothing().when(remoteValidationService).assertSectionExists(anyLong());
+        doNothing().when(remoteValidationService).assertAuthorsExist(anyList());
+
+        when(sectionsClient.getById(anyLong()))
+                .thenAnswer(inv -> new SectionDto(inv.getArgument(0), "Stubbed Section", null));
+        when(authorsClient.getById(anyLong()))
+                .thenAnswer(inv -> new AuthorDto(inv.getArgument(0), "Stub Author"));
 
         BookEntity savedBook = bookRepository.save(book);
         this.existingBookId = savedBook.getBookId();
@@ -75,7 +100,7 @@ public class BookControllerIT {
 
     @Test
     void testGetAllBooks() throws Exception {
-        mockMvc.perform(get("/books"))
+        mockMvc.perform(get("/books").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray());
     }
@@ -116,9 +141,7 @@ public class BookControllerIT {
 
     @Test
     void testDeleteBook() throws Exception {
-        Long bookIdToDelete = 2L;
-
-        mockMvc.perform(delete("/books/" + bookIdToDelete))
+        mockMvc.perform(delete("/books/" + existingBookId))
                 .andExpect(status().isNoContent());
     }
 
@@ -188,7 +211,7 @@ public class BookControllerIT {
         for (int i = 0; i < 8; i++) {
             BookEntity book = new BookEntity();
             book.setTitle("Book " + i);
-            book.setSectionId(savedSection);
+            book.setSection(savedSection);
             book.setAuthors(new java.util.ArrayList<>(Arrays.asList(savedAuthor)));
             bookRepository.save(book);
         }
@@ -209,7 +232,7 @@ public class BookControllerIT {
         for (int i = 0; i < 8; i++) {
             BookEntity book = new BookEntity();
             book.setTitle("Book " + i);
-            book.setSectionId(savedSection);
+            book.setSection(savedSection);
             book.setAuthors(new ArrayList<>(Arrays.asList(savedAuthor)));
             bookRepository.save(book);
         }

@@ -21,7 +21,7 @@ public class SectionEntity {
     @JoinColumn(name = "managed_by_person_id")
     private PersonEntity managedBy;
 
-    @OneToMany(mappedBy = "sectionId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BookEntity> books = new HashSet<>();
 
     public SectionEntity() {

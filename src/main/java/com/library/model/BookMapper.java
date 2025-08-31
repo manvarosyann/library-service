@@ -9,7 +9,7 @@ public class BookMapper {
         BookCreateDto dto = new BookCreateDto();
         dto.setBookId(bookEntity.getBookId());
         dto.setTitle(bookEntity.getTitle());
-        dto.setSectionId(bookEntity.getSectionId().getSectionId());
+        dto.setSectionId(bookEntity.getSection().getSectionId());
         dto.setAuthorIds(
                 bookEntity.getAuthors()
                         .stream()
@@ -20,7 +20,7 @@ public class BookMapper {
     public static BookEntity toEntity(BookCreateDto dto, SectionEntity section, List<AuthorEntity> authors) {
         BookEntity entity = new BookEntity();
         entity.setTitle(dto.getTitle());
-        entity.setSectionId(section);
+        entity.setSection(section);
         entity.setAuthors(authors);
         return entity;
     }
@@ -30,7 +30,7 @@ public class BookMapper {
             bookEntity.setTitle(dto.getTitle());
         }
         if (section != null) {
-            bookEntity.setSectionId(section);
+            bookEntity.setSection(section);
         }
         if (authors != null && !authors.isEmpty()) {
             bookEntity.setAuthors(authors);
@@ -40,7 +40,7 @@ public class BookMapper {
     public static BookResponseDto toResponseDto(BookEntity bookEntity) {
         BookResponseDto dto = new BookResponseDto();
         dto.setTitle(bookEntity.getTitle());
-        dto.setSectionName(bookEntity.getSectionId().getName());
+        dto.setSectionName(bookEntity.getSection().getName());
         dto.setAuthorNames(bookEntity.getAuthors()
                 .stream()
                 .map(AuthorEntity::getFullName)

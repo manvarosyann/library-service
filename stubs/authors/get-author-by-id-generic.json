@@ -1,0 +1,13 @@
+{
+  "priority": 10,
+  "request": { "method": "GET", "urlPattern": "/authors/([0-9]+)" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "transformers": ["response-template"],
+    "jsonBody": {
+      "authorId": "{{request.pathSegments.[1]}}",
+      "fullName": "Stub Author"
+    }
+  }
+}

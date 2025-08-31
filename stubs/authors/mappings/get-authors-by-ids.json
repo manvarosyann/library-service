@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/authors",
+    "queryParameters": {
+      "ids": {
+        "matches": ".*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "authorId": 1,
+        "fullName": "Robert C. Martin"
+      },
+      {
+        "authorId": 2,
+        "fullName": "Martin Fowler"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

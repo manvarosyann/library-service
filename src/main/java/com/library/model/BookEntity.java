@@ -18,7 +18,7 @@ public class BookEntity {
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "section_id")
-    private SectionEntity sectionId;
+    private SectionEntity section;
 
     @ManyToMany
     @JoinTable(name = "book_author",
@@ -27,10 +27,10 @@ public class BookEntity {
     )
     private List<AuthorEntity> authors = new ArrayList<>();
 
-    public BookEntity(Long bookId, String title, SectionEntity sectionId, List<AuthorEntity> authors) {
+    public BookEntity(Long bookId, String title, SectionEntity section, List<AuthorEntity> authors) {
         this.bookId = bookId;
         this.title = title;
-        this.sectionId = sectionId;
+        this.section = section;
         this.authors = authors;
     }
 

@@ -1,0 +1,13 @@
+{
+  "priority": 10,
+  "request": { "method": "GET", "urlPattern": "/sections/([0-9]+)" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "transformers": ["response-template"],
+    "jsonBody": {
+      "sectionId": "{{request.pathSegments.[1]}}",
+      "name": "Stubbed Section"
+    }
+  }
+}

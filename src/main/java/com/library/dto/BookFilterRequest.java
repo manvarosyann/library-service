@@ -1,8 +1,6 @@
 package com.library.dto;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Data
@@ -12,6 +10,8 @@ public class BookFilterRequest {
     private List<Long> authorIds;
     private String sortBy;
     private String direction;
+    private int page;
+    private int size;
 
     public BookFilterRequest() {
     }
