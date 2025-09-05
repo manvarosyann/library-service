@@ -73,7 +73,7 @@ lib/postgresql-*.jar
 *.h2.db
 
 # H2 init script for testing (if machine-specific)
-src/test/resources/db/init-h2.sql
+digital-library/src/test/resources/resources/db/init-h2.sql
 
 # Spring Boot devtools
 .spring-boot-devtools.properties
