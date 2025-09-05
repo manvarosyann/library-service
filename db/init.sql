@@ -252,3 +252,14 @@ from book b
          join borrowing br on b.book_id = br.book_id
 group by b.book_id, b.title
 order by borrow_count desc limit 1;
+
+
+-- Statement vs Prepared Statement
+create table if not exists login_demo (
+    username varchar(50) primary key,
+    password varchar(50) not null
+);
+
+insert into login_demo (username, password) values
+('admin', 'adminpass'),
+('user', 'userpass') on CONFLICT (username) DO NOTHING;

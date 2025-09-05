@@ -57,3 +57,18 @@ docker-compose.override.yml
 
 # Mac temporary files near volumes
 db/.DS_Store
+
+# SQL Injection test logs or compiled files
+SQLInjectionTest.class
+SQLInjectionTest.log
+
+# JDBC drivers
+lib/postgresql-*.jar
+
+# IntelliJ run configs
+.idea/runConfigurations/
+
+# Output from pg_dump or SQL backups
+*.backup
+*.sql
+
