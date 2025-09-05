@@ -3,6 +3,7 @@ package com.library.config;
 import com.library.client.AuthorClient;
 import com.library.client.SectionClient;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -12,13 +13,21 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class HttpClientsConfig {
     @Bean
-    RestClient authorsRestClient(ClientsProperties props) {
-        return RestClient.builder().baseUrl(props.getAuthors().getBaseUrl()).build();
+    @LoadBalanced
+    RestClient.Builder lbRestClientBuilder() {
+        return RestClient.builder();
     }
 
     @Bean
-    RestClient sectionRestClient(ClientsProperties props) {
-        return RestClient.builder().baseUrl(props.getSections().getBaseUrl()).build();
+    RestClient authorsRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
+                                 ClientsProperties props) {
+        return lb.baseUrl(props.getAuthors().getBaseUrl()).build();
+    }
+
+    @Bean
+    RestClient sectionRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
+                                 ClientsProperties props) {
+        return lb.baseUrl(props.getSections().getBaseUrl()).build();
     }
 
     @Bean
