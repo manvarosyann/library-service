@@ -65,7 +65,3 @@ POSTGRES_PASSWORD=secret123
 POSTGRES_DB=library_db
 POSTGRES_PORT=5432
 ```
-
-## Notes
-1. `.env` is **not committed** and is listed in `.gitignore` for security.
-2. Docker volume ensures data persistence across restarts.
