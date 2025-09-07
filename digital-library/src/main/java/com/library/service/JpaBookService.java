@@ -1,45 +1,41 @@
 package com.library.service;
 
-import com.library.client.AuthorClient;
-import com.library.client.AuthorDto;
-import com.library.client.SectionClient;
+import com.library.model.AuthorEntity;
+import com.library.model.SectionEntity;
 import com.library.dto.BookFilterRequest;
 import com.library.model.*;
 import com.library.repository.JpaAuthorsRepository;
 import com.library.repository.JpaBookRepository;
 import com.library.repository.JpaSectionRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.criteria.Predicate;
 
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class JpaBookService {
+    private final RemoteLookupService remote;
     private final RemoteValidationService validation;
-    private final SectionClient sectionClient;
-    private final AuthorClient authorClient;
 
     private final JpaBookRepository bookRepository;
     private final JpaSectionRepository sectionRepository;
     private final JpaAuthorsRepository authorsRepository;
 
-    public JpaBookService(JpaBookRepository bookRepository, JpaSectionRepository sectionRepository,
+    public JpaBookService(JpaBookRepository bookRepository,
+                          JpaSectionRepository sectionRepository,
                           JpaAuthorsRepository authorsRepository,
-                          RemoteValidationService validation, SectionClient sectionClient, AuthorClient authorClient) {
+                          RemoteValidationService validation,
+                          RemoteLookupService remote) {
         this.bookRepository = bookRepository;
         this.sectionRepository = sectionRepository;
         this.authorsRepository = authorsRepository;
         this.validation = validation;
-        this.sectionClient = sectionClient;
-        this.authorClient = authorClient;
+        this.remote = remote;
     }
 
     @Transactional
@@ -48,27 +44,25 @@ public class JpaBookService {
         validation.assertAuthorsExist(bookCreateDto.getAuthorIds());
 
         SectionEntity sectionEntity = sectionRepository.findById(bookCreateDto.getSectionId()).orElseThrow();
-        List<AuthorEntity> authors = authorsRepository.findAllById(bookCreateDto.getAuthorIds().stream().collect(Collectors.toSet()));
-        BookEntity bookEntity = BookMapper.toEntity(bookCreateDto, sectionEntity, authors);
-        BookEntity saved = bookRepository.save(bookEntity);
+        List<AuthorEntity> authors = authorsRepository
+                .findAllById(bookCreateDto.getAuthorIds().stream().collect(Collectors.toSet()));
+        BookEntity saved = bookRepository.save(BookMapper.toEntity(bookCreateDto, sectionEntity, authors));
 
-        var section = sectionClient.getById(saved.getSection().getSectionId());
-        var authorIds = saved.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
-        var authorDtos = authorIds.isEmpty() ? List.<AuthorDto>of() : authorClient.getByIds(authorIds);
-        var authorNames = authorDtos.stream().map(AuthorDto::fullName).toList();
-        return new BookResponseDto(saved.getTitle(), section.name(), authorNames);
+        String sectionName = remote.fetchSectionName(saved.getSection().getSectionId());
+        List<Long> authorIds = saved.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
+        List<String> authorNames = remote.fetchAuthorNames(authorIds);
+
+        return new BookResponseDto(saved.getTitle(), sectionName, authorNames);
     }
 
     @Transactional(readOnly = true)
     public BookResponseDto getBookById(Long id) {
         BookEntity e = bookRepository.findById(id).orElseThrow();
-
-        var section = sectionClient.getById(e.getSection().getSectionId());
-        var authorIds = e.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
-        var authorDtos = authorIds.isEmpty() ? List.<AuthorDto>of() : authorClient.getByIds(authorIds);
-        var authorNames = authorDtos.stream().map(AuthorDto::fullName).toList();
-
-        return new BookResponseDto(e.getTitle(), section.name(), authorNames);
+        String sectionName = remote.fetchSectionName(e.getSection().getSectionId());
+        List<String> authorNames = remote.fetchAuthorNames(
+                e.getAuthors().stream().map(AuthorEntity::getAuthorId).toList()
+        );
+        return new BookResponseDto(e.getTitle(), sectionName, authorNames);
     }
 
     @Transactional
@@ -76,7 +70,6 @@ public class JpaBookService {
         if (!bookRepository.existsById(id)) {
             throw new IllegalArgumentException("Book not found: " + id);
         }
-
         bookRepository.deleteById(id);
     }
 
@@ -97,12 +90,12 @@ public class JpaBookService {
         existing.getAuthors().addAll(authors);
 
         BookEntity saved = bookRepository.save(existing);
-        var sectionDto = sectionClient.getById(saved.getSection().getSectionId());
-        var authorIds = saved.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
-        var authorDtos = authorIds.isEmpty() ? List.<AuthorDto>of() : authorClient.getByIds(authorIds);
-        var authorNames = authorDtos.stream().map(AuthorDto::fullName).toList();
 
-        return new BookResponseDto(saved.getTitle(), sectionDto.name(), authorNames);
+        String sectionName = remote.fetchSectionName(saved.getSection().getSectionId());
+        List<Long> authorIds = saved.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
+        List<String> authorNames = remote.fetchAuthorNames(authorIds);
+
+        return new BookResponseDto(saved.getTitle(), sectionName, authorNames);
     }
 
     @Transactional(readOnly = true)
@@ -122,35 +115,45 @@ public class JpaBookService {
     @Transactional(readOnly = true)
     public Page<BookResponseDto> getFilteredBooks(BookFilterRequest filter, Pageable pageable) {
         Set<String> allowedSortFields = Set.of("title", "bookId");
-
         if (filter.getSortBy() != null && !allowedSortFields.contains(filter.getSortBy())) {
             throw new IllegalStateException("Invalid sort field: " + filter.getSortBy());
         }
 
         Page<BookEntity> page = bookRepository.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-
             if (filter.getTitle() != null) {
                 predicates.add(cb.equal(root.get("title"), filter.getTitle()));
             }
-
             if (filter.getSectionId() != null) {
                 predicates.add(cb.equal(root.get("section").get("sectionId"), filter.getSectionId()));
             }
-
             if (filter.getAuthorIds() != null && !filter.getAuthorIds().isEmpty()) {
                 predicates.add(root.join("authors").get("authorId").in(filter.getAuthorIds()));
             }
-
             return cb.and(predicates.toArray(new Predicate[0]));
         }, pageable);
 
+        List<BookEntity> books = page.getContent();
+
+        Map<Long, String> sectionNameById = new HashMap<>();
+        books.stream()
+                .map(b -> b.getSection().getSectionId())
+                .distinct()
+                .forEach(secId -> sectionNameById.put(secId, remote.fetchSectionName(secId)));
+
+        Set<Long> allAuthorIds = books.stream()
+                .flatMap(b -> b.getAuthors().stream().map(AuthorEntity::getAuthorId))
+                .collect(Collectors.toSet());
+
+        Map<Long, String> authorNameById =
+                allAuthorIds.isEmpty() ? Map.of() : remote.fetchAuthorNamesById(allAuthorIds);
+
         return page.map(e -> {
-            var section = sectionClient.getById(e.getSection().getSectionId());
-            var authorIds = e.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();
-            var authorDtos = authorIds.isEmpty() ? List.<AuthorDto>of() : authorClient.getByIds(authorIds);
-            var authorNames = authorDtos.stream().map(AuthorDto::fullName).toList();
-            return new BookResponseDto(e.getTitle(), section.name(), authorNames);
+            String sectionName = sectionNameById.get(e.getSection().getSectionId());
+            List<String> authorNames = e.getAuthors().stream()
+                    .map(a -> authorNameById.getOrDefault(a.getAuthorId(), a.getFullName().trim()))
+                    .toList();
+            return new BookResponseDto(e.getTitle(), sectionName, authorNames);
         });
     }
 }
