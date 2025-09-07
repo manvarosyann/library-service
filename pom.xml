@@ -12,6 +12,7 @@
     <modules>
         <module>digital-library</module>
         <module>discovery-server</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>

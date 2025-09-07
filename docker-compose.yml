@@ -7,7 +7,7 @@ services:
     ports:
       - "8761:8761"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8761/"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8761/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 20
@@ -127,10 +127,29 @@ services:
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_0_URI: http://sections-mock:8080
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_1_URI: http://sections-mock-b:8080
 
-    ports:
-      - "8080"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    image: yourorg/api-gateway:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      EUREKA_DEFAULT_ZONE: http://discovery-server:8761/eureka/
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      book-service:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 30
