@@ -9,6 +9,8 @@ import com.library.repository.JpaBookRepository;
 import com.library.repository.JpaSectionRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,18 @@ public class JpaBookService {
         this.remote = remote;
     }
 
+    private Long currentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new IllegalStateException("Unauthenticated access");
+        }
+        try {
+            return Long.valueOf(auth.getName());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException("JWT subject is not a numeric user id: " + auth.getName());
+        }
+    }
+
     @Transactional
     public BookResponseDto createBook(BookCreateDto bookCreateDto) {
         validation.assertSectionExists(bookCreateDto.getSectionId());
@@ -47,6 +61,8 @@ public class JpaBookService {
         List<AuthorEntity> authors = authorsRepository
                 .findAllById(bookCreateDto.getAuthorIds().stream().collect(Collectors.toSet()));
         BookEntity saved = bookRepository.save(BookMapper.toEntity(bookCreateDto, sectionEntity, authors));
+
+        saved.setCreatedByUserId(currentUserId());
 
         String sectionName = remote.fetchSectionName(saved.getSection().getSectionId());
         List<Long> authorIds = saved.getAuthors().stream().map(AuthorEntity::getAuthorId).toList();

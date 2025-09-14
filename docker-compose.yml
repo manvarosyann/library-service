@@ -105,6 +105,8 @@ services:
         condition: service_healthy
       sections-mock-b:
         condition: service_healthy
+
+
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -127,8 +129,19 @@ services:
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_0_URI: http://sections-mock:8080
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_1_URI: http://sections-mock-b:8080
 
+      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED: "true"
+      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_LOWER_CASE_SERVICE_ID: "true"
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,gateway"
+      MANAGEMENT_ENDPOINT_GATEWAY_ENABLED: "true"
+
+
+      BOOKS_JWT_SECRET: super-secret-key-change-me-32-chars-min
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_SECRET_KEY: ${BOOKS_JWT_SECRET}
+    ports:
+      - "8081:8081"
+
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
       interval: 5s
       timeout: 3s
       retries: 30

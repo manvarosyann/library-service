@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Data
 @Entity
 @Table(name = "book")
@@ -27,6 +28,9 @@ public class BookEntity {
     )
     private List<AuthorEntity> authors = new ArrayList<>();
 
+    @Column(name = "created_by_user_id")
+    private Long createdByUserId;
+
     public BookEntity(Long bookId, String title, SectionEntity section, List<AuthorEntity> authors) {
         this.bookId = bookId;
         this.title = title;
@@ -37,4 +41,5 @@ public class BookEntity {
     public BookEntity() {
 
     }
+
 }

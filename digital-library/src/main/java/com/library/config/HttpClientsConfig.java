@@ -2,6 +2,7 @@ package com.library.config;
 
 import com.library.client.AuthorClient;
 import com.library.client.SectionClient;
+import com.library.security.ServiceTokenProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 public class HttpClientsConfig {
-    @Bean
+    @Bean()
     @LoadBalanced
     RestClient.Builder lbRestClientBuilder() {
         return RestClient.builder();
@@ -20,14 +21,20 @@ public class HttpClientsConfig {
 
     @Bean
     RestClient authorsRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
-                                 ClientsProperties props) {
-        return lb.baseUrl(props.getAuthors().getBaseUrl()).build();
+                                 ClientsProperties props, ServiceTokenProvider tokens) {
+        return lb.baseUrl(props.getAuthors().getBaseUrl()).requestInterceptor((req, body, exec) -> {
+            req.getHeaders().setBearerAuth(tokens.issueServiceToken());
+            return exec.execute(req, body);
+        }).build();
     }
 
     @Bean
     RestClient sectionRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
-                                 ClientsProperties props) {
-        return lb.baseUrl(props.getSections().getBaseUrl()).build();
+                                 ClientsProperties props, ServiceTokenProvider tokens) {
+        return lb.baseUrl(props.getSections().getBaseUrl()).requestInterceptor((req, body, exec) -> {
+            req.getHeaders().setBearerAuth(tokens.issueServiceToken());
+            return exec.execute(req, body);
+        }).build();
     }
 
     @Bean
