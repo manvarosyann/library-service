@@ -2,37 +2,38 @@ package com.library.config;
 
 import com.library.client.AuthorClient;
 import com.library.client.SectionClient;
-import com.library.security.ServiceTokenProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 public class HttpClientsConfig {
-    @Bean()
+
+    @Bean
     @LoadBalanced
     RestClient.Builder lbRestClientBuilder() {
         return RestClient.builder();
     }
 
-    @Bean
+    @Bean(name = "authorsRestClient")
     RestClient authorsRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
-                                 ClientsProperties props, ServiceTokenProvider tokens) {
+                                 ClientsProperties props, ServiceTokenClient tokens) {
         return lb.baseUrl(props.getAuthors().getBaseUrl()).requestInterceptor((req, body, exec) -> {
-            req.getHeaders().setBearerAuth(tokens.issueServiceToken());
+            req.getHeaders().setBearerAuth(tokens.getToken());
             return exec.execute(req, body);
         }).build();
     }
 
-    @Bean
+    @Bean(name = "sectionsRestClient")
     RestClient sectionRestClient(@Qualifier("lbRestClientBuilder") RestClient.Builder lb,
-                                 ClientsProperties props, ServiceTokenProvider tokens) {
+                                 ClientsProperties props, ServiceTokenClient tokens) {
         return lb.baseUrl(props.getSections().getBaseUrl()).requestInterceptor((req, body, exec) -> {
-            req.getHeaders().setBearerAuth(tokens.issueServiceToken());
+            req.getHeaders().setBearerAuth(tokens.getToken());
             return exec.execute(req, body);
         }).build();
     }
@@ -44,9 +45,14 @@ public class HttpClientsConfig {
     }
 
     @Bean
-    SectionClient sectionClient(@Qualifier("sectionRestClient") RestClient sectionsRestClient) {
+    SectionClient sectionClient(@Qualifier("sectionsRestClient") RestClient sectionsRestClient) {
         var f = HttpServiceProxyFactory.builderFor(RestClientAdapter.create(sectionsRestClient)).build();
         return f.createClient(SectionClient.class);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 

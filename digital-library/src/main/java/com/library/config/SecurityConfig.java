@@ -2,18 +2,11 @@ package com.library.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.oauth2.server.resource.authentication.*;
-
-import javax.crypto.SecretKey;
-
 
 @Configuration
 @EnableMethodSecurity
@@ -27,7 +20,8 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health", "/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter())));
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -40,13 +34,4 @@ public class SecurityConfig {
         jwtConv.setJwtGrantedAuthoritiesConverter(conv);
         return jwtConv;
     }
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKey key = JwtKeys.hmacKey();
-        return NimbusJwtDecoder.withSecretKey(key)
-                .macAlgorithm(MacAlgorithm.HS256)
-                .build();
-    }
-
 }
