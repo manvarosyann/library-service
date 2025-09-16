@@ -1,5 +1,6 @@
 package com.library.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -18,11 +19,12 @@ public class ServiceTokenClient {
     private Instant cachedExpiry = Instant.EPOCH;
 
     public ServiceTokenClient(
+            @Qualifier("lbRestClientBuilder") RestClient.Builder lb,
             @Value("${auth.base-url:http://auth-service}") String authBaseUrl,
             @Value("${auth.client-id:books-service}") String clientId,
             @Value("${auth.client-secret:CHANGE_ME}") String clientSecret
     ) {
-        this.http = RestClient.create(authBaseUrl);
+        this.http = lb.baseUrl(authBaseUrl).build();
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.authBaseUrl = authBaseUrl;

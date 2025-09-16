@@ -88,25 +88,23 @@ services:
       retries: 20
       start_period: 10s
 
+  auth-service:
+    build: ./auth-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+      BOOKS_JWT_SECRET: "change-me-dev-secret-min-32-chars-min"
+      EUREKA_CLIENT_ID: digital-library
+      BOOKS_SERVICE_CLIENT_SECRET: dev-secret
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - discovery-server
+
   book-service:
     build:
       context: ./digital-library
     restart: always
-    depends_on:
-      discovery-server:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      authors-mock:
-        condition: service_healthy
-      authors-mock-b:
-        condition: service_healthy
-      sections-mock:
-        condition: service_healthy
-      sections-mock-b:
-        condition: service_healthy
-
-
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
@@ -129,23 +127,34 @@ services:
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_0_URI: http://sections-mock:8080
       SPRING_CLOUD_DISCOVERY_CLIENT_SIMPLE_INSTANCES_SECTIONS_1_URI: http://sections-mock-b:8080
 
-      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED: "true"
-      SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_LOWER_CASE_SERVICE_ID: "true"
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,gateway"
-      MANAGEMENT_ENDPOINT_GATEWAY_ENABLED: "true"
-
-
-      BOOKS_JWT_SECRET: super-secret-key-change-me-32-chars-min
+      BOOKS_JWT_SECRET: "super-secret-key-change-me-32-chars-min"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_SECRET_KEY: ${BOOKS_JWT_SECRET}
-    ports:
-      - "8081:8081"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWS_ALGORITHM: HS256
 
+      AUTH_BASE_URL: http://auth-service:8081
+
+      BOOKS_SERVICE_CLIENT_SECRET: dev-secret
+    ports:
+      - "8082:8082"
     healthcheck:
       test: [ "CMD", "wget", "-qO-", "http://localhost:8081/actuator/health" ]
       interval: 5s
       timeout: 3s
       retries: 30
       start_period: 15s
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      postgres:
+          condition: service_healthy
+      authors-mock:
+          condition: service_healthy
+      authors-mock-b:
+          condition: service_healthy
+      sections-mock:
+          condition: service_healthy
+      sections-mock-b:
+          condition: service_healthy
 
   api-gateway:
     build:
@@ -193,7 +202,7 @@ services:
         condition: service_healthy
     ports:
       - "5000:5000"
-      - "8081:8081"
+      - "18081:18081"
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     environment:

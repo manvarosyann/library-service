@@ -45,6 +45,7 @@ public class AuthController {
 
         var claims = new JWTClaimsSet.Builder()
                 .subject(String.valueOf(u.id()))
+                .audience("digital-library")
                 .claim("email", u.email())
                 .claim("roles", u.roles())
                 .issuer("auth-service")
