@@ -111,6 +111,10 @@ services:
       SERVICE_CLIENT_SECRET: dev-secret
       LOGSTASH_HOST: logstash
       LOGSTASH_PORT: "5000"
+      MANAGEMENT_TRACING_ENABLED: "true"
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      LOGGING_PATTERN_LEVEL: "%5p [traceId=%X{traceId:-}, spanId=%X{spanId:-}]"
     ports:
         - "8081:8081"
     networks: [observability]
@@ -166,6 +170,11 @@ services:
 
       LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY: DEBUG
       LOGGING_LEVEL_REACTOR_NETTY_HTTP_CLIENT: DEBUG
+
+      MANAGEMENT_TRACING_ENABLED: "true"
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      LOGGING_PATTERN_LEVEL: "%5p [traceId=%X{traceId:-}, spanId=%X{spanId:-}]"
     ports:
       - "8082:8080"
     networks: [observability]
@@ -213,6 +222,11 @@ services:
 
       LOGSTASH_HOST: logstash
       LOGSTASH_PORT: "5000"
+
+      MANAGEMENT_TRACING_ENABLED: "true"
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: "1.0"
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+      LOGGING_PATTERN_LEVEL: "%5p [traceId=%X{traceId:-}, spanId=%X{spanId:-}]"
     networks: [observability]
     depends_on:
       discovery-server:

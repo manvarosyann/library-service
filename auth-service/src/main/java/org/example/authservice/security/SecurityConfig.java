@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/actuator/**",
-                                "/auth/login",
+                                "/auth/**",
                                 "/test-log"
                         ).permitAll()
                         .anyRequest().authenticated()
